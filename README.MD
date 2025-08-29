@@ -1,4 +1,4 @@
-###pydeq
+### pydeq
 
 To install pydeq conda is required. Run `install.sh` in the (base) conda environment.
 
