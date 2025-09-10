@@ -3,6 +3,10 @@ from typing import Callable
 from .types import Data
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+import matplotlib
+
+# Set the TeX system to to the available one
+matplotlib.rcParams['pgf.texsystem'] = 'pdflatex'
 
 def get_worker(task_name: str) -> Callable[[Axes, Data], None]:
     if task_name == "streamplot":
@@ -28,6 +32,6 @@ def save_plot(fig: Figure):
     if answer == "yes":
         print("Enter the file name:")
         filename = input()
-        fig.savefig(filename+'.svg', format='svg')
+        fig.savefig(filename)
     else:
         print("Okay, plot not saved.")
