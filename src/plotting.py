@@ -24,7 +24,10 @@ def plot_zeros(ax: Axes, data: Data) -> None:
 
     wrapped_vf = data.wrapped_vf
 
-    zero, _, _, _ = fsolve(wrapped_vf, [0, 0], full_output=True)
+    task_dict = data.get_task('zeros').dict
+    x0 = task_dict.get('x0', [0, 0])
+
+    zero, _, _, _ = fsolve(wrapped_vf, x0, full_output=True)
     zero_x, zero_y = zero[0], zero[1]
 
     ax.scatter(zero_x, zero_y, color='red', marker='o', label='Zeros')

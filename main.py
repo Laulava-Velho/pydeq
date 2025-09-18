@@ -1,106 +1,46 @@
-import numpy as np
+import sys
+import argparse
+import importlib.util
 import matplotlib.pyplot as plt
-from typing import Tuple
-from numpy.typing import NDArray
 from src.run_utils import run, save_plot
-from src.types import Data, Task
 
-# type the formulas for the x and y components of the vector fields
-def v1(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return np.ones_like(x), x*y
+def import_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if spec is None:
+        raise ValueError(f"Failed to create spec for {file_path}")
+    else:
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        loader = spec.loader
+        if loader is None:
+            raise ValueError(f"Failed to create loader for {file_path}")
+        else:
+            loader.exec_module(module)
+            return module
 
-def v2(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return  np.ones_like(x), y**2 / (1. + x**2)
+def load(sem_num: int = 1):
+    module = import_from_path(f"sem{sem_num}", f"./examples/sem{sem_num}.py")
+    return module
 
-def v3(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return np.ones_like(x), y*(1. - y / 4.0)
+def format_args(args):
+    args.ex = [int(entry) for entry in args.ex]
+    return args
 
-def v4(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return 1. + np.exp(y), x
-
-def v5(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return x, x + y
-
-def v6(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
-    return 5*x**2, 5*(2*x*y - y**2)
-
-ex1 =Data(
-    vector_field=v1,
-    x_seg=(-2, 2),
-    x_res=25,
-    y_seg=(-2, 2),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.4)
-    ]
-)
-
-ex2 = Data(
-    vector_field=v2,
-    x_seg=(-4, 4),
-    x_res=25,
-    y_seg=(-4, 4),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.5)
-    ]
-)
-
-ex3 = Data(
-    vector_field=v3,
-    x_seg=(-4, 4),
-    x_res=25,
-    y_seg=(0, 8),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.2)
-    ]
-)
-
-ex4 = Data(
-    vector_field=v4,
-    x_seg=(-4, 4),
-    x_res=25,
-    y_seg=(-4, 4),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.2)
-    ]
-)
-
-ex5 = Data(
-    vector_field=v5,
-    x_seg=(-4, 4),
-    x_res=25,
-    y_seg=(-4, 4),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.2),
-        Task("zeros")
-    ]
-)
-
-ex6 = Data(
-    vector_field=v6,
-    x_seg=(0, 4),
-    x_res=25,
-    y_seg=(-2, 2),
-    y_res=25,
-    tasks=[
-        Task("directionfield"),
-        Task("streamplot", density=0.25),
-        Task("zeros")
-    ]
-)
-
-ex_list = [ex1, ex2, ex3, ex4, ex5, ex6]
+def parse_args():
+    parser = argparse.ArgumentParser(description='Run the program')
+    parser.add_argument('--sem', type=int, default=1, help='Which seminar to load. Default is 1.')
+    parser.add_argument('--ex', type=int, nargs='*', help='Which examples to load. By default, all examples are loaded.')
+    parser.add_argument('--save', action='store_true', help='Save the plot to a file.')
+    args = parser.parse_args()
+    args = format_args(args)
+    return args
 
 if __name__ == "__main__":
+
+    args = parse_args()
+    ex_list = load(sem_num = args.sem).ex_list
+    if args.ex:
+        ex_list = [ex_list[i - 1] for i in args.ex if 1 <= i <= len(ex_list)]
 
     for data in ex_list:
         fig, ax = plt.subplots(figsize=(16 , 12))
@@ -108,6 +48,7 @@ if __name__ == "__main__":
         run(ax, data)
         ax.set_aspect('equal')
         plt.show()
-        save_plot(fig)
+        if args.save:
+            save_plot(fig)
 
     print("Thank you for using the program.")
