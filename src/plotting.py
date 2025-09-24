@@ -38,3 +38,9 @@ def plot_directionfield(ax: Axes, data: Data) -> None:
 
     ax.quiver(x, y, vx, vy, color='blue', headwidth=0, headlength=0, headaxislength=0, pivot='mid', units='xy', minlength=1.0)
     ax.scatter(x, y, color='blue', marker='o', s=10.0, alpha=1.)
+
+def plot_vectorfield(ax: Axes, data: Data) -> None:
+
+    x, y, vx, vy = data.vector_field()
+
+    ax.quiver(x, y, vx, vy, color='blue', scale=5, width=0.0015, headwidth=4, headlength=10, headaxislength=5, units='xy')

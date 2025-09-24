@@ -1,4 +1,4 @@
-from .plotting import plot_streamplot, plot_directionfield, plot_zeros
+from .plotting import plot_streamplot, plot_directionfield, plot_vectorfield, plot_zeros
 from typing import Callable
 from .types import Data
 from matplotlib.axes import Axes
@@ -13,6 +13,8 @@ def get_worker(task_name: str) -> Callable[[Axes, Data], None]:
         return plot_streamplot
     elif task_name == "directionfield":
         return plot_directionfield
+    elif task_name == "vectorfield":
+        return plot_vectorfield
     elif task_name == "zeros":
         return plot_zeros
     else:

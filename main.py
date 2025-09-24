@@ -23,6 +23,8 @@ def load(sem_num: int = 1):
     return module
 
 def format_args(args):
+    if args.ex is None:
+        args.ex = []
     args.ex = [int(entry) for entry in args.ex]
     return args
 
