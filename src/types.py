@@ -41,6 +41,9 @@ class Data:
         self._tasks = tasks
         self._kwargs = kwargs
 
+        self.x_label = kwargs.pop("x_label", "x")
+        self.y_label = kwargs.pop("y_label", "y")
+
         self._grid = make_grid(x_left=x_seg[0], x_right=x_seg[1], x_res=x_res, y_down=y_seg[0], y_up=y_seg[1], y_res=y_res)
         self._v = self._vf(*self._grid)
 
